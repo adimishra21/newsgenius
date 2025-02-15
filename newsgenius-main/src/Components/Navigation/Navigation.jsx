@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { navigationMenu } from './NavigationMenu';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Button, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { AuthContext } from '../../App';
 
 const Navigation = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -14,8 +15,10 @@ const Navigation = () => {
         setAnchorEl(null);
     };
     const navigate = useNavigate();
+    const { user, logout } = useContext(AuthContext);
+
     const handleLogout = () => {
-        console.log("logout");
+        logout();
         handleClose();
     };
 
@@ -60,12 +63,12 @@ const Navigation = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     <Avatar
-                        alt="username"
-                        src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_960_720.png"
+                        alt={user?.name || 'User'}
+                        src={user ? `https://ui-avatars.com/api/?name=${user.name}` : "https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_960_720.png"}
                     />
                     <div>
-                        <span>Aditya Kumar Mishra</span>
-                        <span className="opacity-70">@Adikra21</span>
+                        <span>{user?.name || 'Guest'}</span>
+                        <span className="opacity-70">{user ? `@${user.name}` : ''}</span>
                     </div>
 
                     <Button
