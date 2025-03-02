@@ -57,7 +57,7 @@ const Login = ({ setShowLogin }) => {
       <Button
         fullWidth
         variant="contained"
-        color="primary"
+        color="blue"
         type="submit"
         disabled={!email || !password}
       >

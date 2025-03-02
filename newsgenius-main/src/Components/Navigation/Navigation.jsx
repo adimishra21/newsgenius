@@ -66,10 +66,10 @@ const Navigation = () => {
                         alt={user?.name || 'User'}
                         src={user ? `https://ui-avatars.com/api/?name=${user.name}` : "https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_960_720.png"}
                     />
-                    <div>
+                    <p>
                         <span>{user?.name || 'Guest'}</span>
-                        <span className="opacity-70">{user ? `@${user.name}` : ''}</span>
-                    </div>
+                        <span className="opacity-70">@{user ? user.name : ''.split("").join("_").toLowerCase()}</span>
+                    </p>
 
                     <Button
                         id="basic-button"

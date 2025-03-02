@@ -15,7 +15,11 @@ const authSlice = createSlice({
       state.error = null;
     },
     googleSignupSuccess(state, action) {
-      state.user = action.payload;
+      state.user = {
+        name: action.payload.name,
+        email: action.payload.email,
+      };
+
       state.loading = false;
     },
     googleSignupFailure(state, action) {

@@ -1,20 +1,21 @@
 import React, { useState, useContext } from 'react';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, MenuItem } from '@mui/material';
 import { AuthContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { googleSignupStart } from '../../redux/slices/authSlice';
 import { GoogleLogin } from '@react-oauth/google';
 
-
-
 const Signup = ({ setShowLogin }) => {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('User');
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,25 +32,33 @@ const Signup = ({ setShowLogin }) => {
         setTimeout(() => resolve({
           data: {
             user: {
-              name: email.split('@')[0], // Use email prefix as name
-              email: email
+              name: fullName,
+              email: email,
+              role: role
             }
           }
         }), 500)
       );
-      
-      setShowLogin(true);
+
+      // Dispatch user information to Redux store
+      dispatch(googleSignupStart({
+        name: response.data.user.name,
+        email: response.data.user.email
+      }));
+
+      // Redirect to the login page after successful signup
+      setShowLogin(true); // Show login after successful signup
 
     } catch (err) {
       setError('Registration failed. Please try again.');
     }
   };
 
-
-  const dispatch = useDispatch();
-
   const handleGoogleSuccess = (credentialResponse) => {
-    dispatch(googleSignupStart(credentialResponse));
+    dispatch(googleSignupStart({
+      name: fullName,
+      email: credentialResponse.profileObj.email
+    }));
   };
 
   const handleGoogleError = () => {
@@ -59,6 +68,7 @@ const Signup = ({ setShowLogin }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <GoogleLogin
+        clientId="YOUR_CLIENT_ID"
         onSuccess={handleGoogleSuccess}
         onError={handleGoogleError}
         text="signup_with"
@@ -81,6 +91,14 @@ const Signup = ({ setShowLogin }) => {
       />
       <TextField
         fullWidth
+        label="Full Name"
+        variant="outlined"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
+
+      <TextField
+        fullWidth
         label="Password"
         type="password"
         variant="outlined"
@@ -95,6 +113,18 @@ const Signup = ({ setShowLogin }) => {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
+      <TextField
+        fullWidth
+        select
+        label="Role"
+        variant="outlined"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+      >
+        <MenuItem value="Reporter">Reporter</MenuItem>
+        <MenuItem value="Channel">Channel</MenuItem>
+        <MenuItem value="User">User</MenuItem>
+      </TextField>
       {error && <div className="text-red-500 mb-2">{error}</div>}
       <Button
         fullWidth
